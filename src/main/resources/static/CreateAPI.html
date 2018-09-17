@@ -160,6 +160,7 @@
                                                 class="console-selectbox console-width-4 ng-pristine ng-valid">
                                             <option value="none" class="ng-binding">不认证</option>
                                             <option value="sessionTokenAuth" class="ng-binding">session-token</option>
+                                            <option value="jwtTokenAuth" class="ng-binding">JWT-token</option>
                                         </select>
                                     </div>
                                 </div>
@@ -431,7 +432,7 @@
                                             class="ng-binding">后端超时
                                         </td>
                                         <td>
-                                            <input type="text" value="6000"
+                                            <input type="text" value="30000"
                                                    class="console-textbox console-width-1 ng-pristine ng-valid"
                                                    style="border-radius: 0px;" id="serverTimeOut" maxlength="7"
                                                     placeholder="请输入请求后台等待超时毫秒"
