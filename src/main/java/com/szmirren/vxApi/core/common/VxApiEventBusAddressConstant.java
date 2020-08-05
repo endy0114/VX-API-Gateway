@@ -1,5 +1,7 @@
 package com.szmirren.vxApi.core.common;
 
+import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
+
 /**
  * event bus 通讯地址
  * 
@@ -36,14 +38,14 @@ public interface VxApiEventBusAddressConstant {
 	final static String SYSTEM_GET_INFO = "sys:getSysInfos";
 	/**
 	 * 添加异常信息,参数要求:JsonObject<br>
-	 * [{@link com.szmirren.vxApi.core.entity.VxApiTrackInfos} to JsonObject
+	 * [{@link VxApiTrackInfo} to JsonObject
 	 * 选填]<br>
 	 * 没有返回结果
 	 */
 	final static String SYSTEM_PLUS_ERROR = "sys:plusError";
 	/**
 	 * 添加API追踪信息记录,参数要求:<br>
-	 * [{@link com.szmirren.vxApi.core.entity.VxApiTrackInfos} to JsonObject
+	 * [{@link VxApiTrackInfo} to JsonObject
 	 * 选填]<br>
 	 * 没有返回结果
 	 */

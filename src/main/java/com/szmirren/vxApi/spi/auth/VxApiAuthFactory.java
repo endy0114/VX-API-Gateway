@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.szmirren.vxApi.core.common.StrUtil;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.spi.auth.impl.VxApiAuthJwtTokenImpl;
 import com.szmirren.vxApi.spi.auth.impl.VxApiAuthSessionTokenImpl;
 
@@ -46,7 +46,7 @@ public class VxApiAuthFactory {
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	public static VxApiAuth getVxApiAuth(String name, JsonObject options, VxApis api, HttpClient httpClient)
+	public static VxApiAuth getVxApiAuth(String name, JsonObject options, VxApi api, HttpClient httpClient)
 			throws NullPointerException, ClassNotFoundException {
 		if (StrUtil.isNullOrEmpty(name)) {
 			throw new NullPointerException("获取API权限验证实现-->失败:工厂名字不能为空");

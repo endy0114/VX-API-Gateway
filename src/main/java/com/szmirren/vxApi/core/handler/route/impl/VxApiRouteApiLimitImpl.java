@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.szmirren.vxApi.core.common.VxApiGatewayAttribute;
 import com.szmirren.vxApi.core.entity.VxApiAPILimit;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteConstant;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerApiLimit;
 
@@ -22,13 +22,13 @@ public class VxApiRouteApiLimitImpl implements VxApiRouteHandlerApiLimit {
 	/**
 	 * API的相关配置
  	 */
-	private VxApis api;
+	private VxApi api;
 	/**
 	 * 流量限制
  	 */
 	private VxApiAPILimit limit;
 
-	public VxApiRouteApiLimitImpl(VxApis api) {
+	public VxApiRouteApiLimitImpl(VxApi api) {
 		super();
 		this.api = api;
 		if (api.getLimitUnit() != null) {
@@ -58,7 +58,7 @@ public class VxApiRouteApiLimitImpl implements VxApiRouteHandlerApiLimit {
 						} else {
 							VxApiAPILimit newLimit = new VxApiAPILimit(api.getIpLimit(), api.getApiLimit());
 							newLimit.setCurPoint(1);
-							newLimit.addUserIpCurPotints(host, 1L);
+							newLimit.addUserIpCurPoints(host, 1L);
 							limit = newLimit;
 							rct.next();
 						}
@@ -84,7 +84,7 @@ public class VxApiRouteApiLimitImpl implements VxApiRouteHandlerApiLimit {
 							newLimit.setCurPoint(1);
 							if (api.getIpLimit() != -1) {
 								String host = rct.request().remoteAddress().host();
-								newLimit.addUserIpCurPotints(host, 1L);
+								newLimit.addUserIpCurPoints(host, 1L);
 							}
 							limit = newLimit;
 							rct.next();
@@ -100,7 +100,7 @@ public class VxApiRouteApiLimitImpl implements VxApiRouteHandlerApiLimit {
 				newLimit.setCurPoint(1);
 				if (api.getIpLimit() != -1) {
 					String host = rct.request().remoteAddress().host();
-					newLimit.addUserIpCurPotints(host, 1L);
+					newLimit.addUserIpCurPoints(host, 1L);
 				}
 				limit = newLimit;
 			}

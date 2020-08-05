@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.szmirren.vxApi.core.common.StrUtil;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.spi.customHandler.impl.GetConstantValueHandler;
 import com.szmirren.vxApi.spi.customHandler.impl.GetServerUnixTimestampHandler;
 import com.szmirren.vxApi.spi.customHandler.impl.SessionTokenGrantAuthHandler;
@@ -62,7 +62,7 @@ public class VxApiCustomHandlerFactory {
 	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
-	public static VxApiCustomHandler getCustomHandler(String name, JsonObject options, VxApis api, HttpClient httpClient)
+	public static VxApiCustomHandler getCustomHandler(String name, JsonObject options, VxApi api, HttpClient httpClient)
 			throws NullPointerException, ClassNotFoundException, Exception {
 		if (StrUtil.isNullOrEmpty(name)) {
 			throw new NullPointerException("获取自定义处理器-->失败:工厂名字不能为空");

@@ -1,6 +1,6 @@
 package com.szmirren.vxApi.core.handler.route;
 
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.handler.route.impl.VxApiRouteApiLimitImpl;
 
 import io.vertx.core.Handler;
@@ -19,7 +19,7 @@ public interface VxApiRouteHandlerApiLimit extends Handler<RoutingContext> {
 	 * @param api
 	 * @return
 	 */
-	static VxApiRouteHandlerApiLimit create(VxApis api) {
+	static VxApiRouteHandlerApiLimit create(VxApi api) {
 		return new VxApiRouteApiLimitImpl(api);
 	};
 }

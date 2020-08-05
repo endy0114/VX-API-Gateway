@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.szmirren.vxApi.core.common.StrUtil;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
@@ -36,7 +36,7 @@ public class VxApiAfterHandlerFactory {
 	 * @throws NullPointerException
 	 * @throws ClassNotFoundException
 	 */
-	public static VxApiAfterHandler getAfterHandler(String name, JsonObject options, VxApis api, HttpClient httpClient)
+	public static VxApiAfterHandler getAfterHandler(String name, JsonObject options, VxApi api, HttpClient httpClient)
 			throws NullPointerException, ClassNotFoundException {
 		if (StrUtil.isNullOrEmpty(name)) {
 			throw new NullPointerException("获取后置处理器实现-->失败:工厂名字不能为空");

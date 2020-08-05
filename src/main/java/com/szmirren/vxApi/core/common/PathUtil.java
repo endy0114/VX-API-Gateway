@@ -33,7 +33,7 @@ public class PathUtil {
 	/**
 	 * 获得根目录如果在jar中运行获得相对路径,反则返回当前线程运行的根目录
 	 * 
-	 * @param name
+	 * @param fileName
 	 * @return
 	 */
 	public static String getPathString(String fileName) {

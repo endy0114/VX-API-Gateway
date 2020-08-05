@@ -3,7 +3,7 @@ package com.szmirren.vxApi.core.verticle;
 import com.szmirren.vxApi.core.common.StrUtil;
 import com.szmirren.vxApi.core.common.VxApiDATAStoreConstant;
 import com.szmirren.vxApi.core.common.VxApiEventBusAddressConstant;
-import com.szmirren.vxApi.core.entity.VxApiTrackInfos;
+import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
@@ -188,7 +188,7 @@ public class SysVerticle extends AbstractVerticle {
     public void plusError(Message<JsonObject> msg) {
         errorCount += 1;
         if (msg.body() != null) {
-            VxApiTrackInfos infos = VxApiTrackInfos.fromJson(msg.body());
+            VxApiTrackInfo infos = VxApiTrackInfo.fromJson(msg.body());
             LOG.error(MessageFormat.format("应用:{0} , API:{1} ,在执行的过程中发生了异常:{2} ,堆栈信息{3}", infos.getAppName(), infos.getApiName(),
                     infos.getErrMsg(), infos.getErrStackTrace()));
         }
@@ -201,7 +201,7 @@ public class SysVerticle extends AbstractVerticle {
      */
     public void plusTrackInfos(Message<JsonObject> msg) {
         if (msg.body() != null) {
-            VxApiTrackInfos infos = VxApiTrackInfos.fromJson(msg.body());
+            VxApiTrackInfo infos = VxApiTrackInfo.fromJson(msg.body());
             if (LOG.isDebugEnabled()) {
                 LOG.debug(MessageFormat.format("应用:{0} , API:{1} ,执行结果{2}", infos.getAppName(), infos.getApiName(), infos));
             }

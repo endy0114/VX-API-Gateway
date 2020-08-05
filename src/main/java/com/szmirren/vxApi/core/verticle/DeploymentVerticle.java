@@ -2,7 +2,7 @@ package com.szmirren.vxApi.core.verticle;
 
 import com.szmirren.vxApi.core.common.ResultFormat;
 import com.szmirren.vxApi.core.common.VxApiEventBusAddressConstant;
-import com.szmirren.vxApi.core.entity.VxApiDeployInfos;
+import com.szmirren.vxApi.core.entity.VxApiDeployInfo;
 import com.szmirren.vxApi.core.enums.HTTPStatusCodeMsgEnum;
 import com.szmirren.vxApi.core.options.VxApiServerOptions;
 import io.vertx.core.*;
@@ -24,7 +24,7 @@ public class DeploymentVerticle extends AbstractVerticle {
     /**
      * 存储已经在运行了的项目
      */
-    private Map<String, VxApiDeployInfos> applicationMaps = new HashMap<>();
+    private Map<String, VxApiDeployInfo> applicationMaps = new HashMap<>();
     /**
      * 存储已经在运行的应用API集合
      */
@@ -32,11 +32,11 @@ public class DeploymentVerticle extends AbstractVerticle {
     /**
      * 端口服务代理者
      */
-    private Map<Integer, VxApiDeployInfos> portProxyMap = new HashMap<>();
+    private Map<Integer, VxApiDeployInfo> portProxyMap = new HashMap<>();
     /**
      * 备用端口服务代理者
      */
-    private Map<Integer, List<VxApiDeployInfos>> portStandbyProxyMap = new HashMap<>();
+    private Map<Integer, List<VxApiDeployInfo>> portStandbyProxyMap = new HashMap<>();
     /**
      * 被端口服务代理的应用,set值为端口号+appName
      */
@@ -109,7 +109,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                         LOG.info("启动应用程序:" + name + "-->成功!");
                         // 记录部署信息
                         VxApiServerOptions serverOptions = VxApiServerOptions.fromJson(application.getJsonObject("serverOptions"));
-                        VxApiDeployInfos infos = new VxApiDeployInfos(name, res.result(), serverOptions);
+                        VxApiDeployInfo infos = new VxApiDeployInfo(name, res.result(), serverOptions);
                         applicationMaps.put(name, infos);
                         applicationApiMaps.put(name, new HashSet<>());
                         // 设置端口服务号代理
@@ -119,7 +119,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                             if (portProxyMap.get(httpPort) == null) {
                                 portProxyMap.put(httpPort, infos);
                             } else {
-                                List<VxApiDeployInfos> item = portStandbyProxyMap.get(httpPort) == null
+                                List<VxApiDeployInfo> item = portStandbyProxyMap.get(httpPort) == null
                                         ? new ArrayList<>()
                                         : portStandbyProxyMap.get(httpPort);
                                 item.add(infos);
@@ -132,7 +132,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                             if (portProxyMap.get(httpsPort) == null) {
                                 portProxyMap.put(httpsPort, infos);
                             } else {
-                                List<VxApiDeployInfos> item = portStandbyProxyMap.get(httpsPort) == null
+                                List<VxApiDeployInfo> item = portStandbyProxyMap.get(httpsPort) == null
                                         ? new ArrayList<>()
                                         : portStandbyProxyMap.get(httpsPort);
                                 item.add(infos);
@@ -168,7 +168,7 @@ public class DeploymentVerticle extends AbstractVerticle {
             }
         }
         String name = msg.body().getString("appName");
-        VxApiDeployInfos deployInfos = applicationMaps.get(name);
+        VxApiDeployInfo deployInfos = applicationMaps.get(name);
         if (deployInfos == null) {
             msg.reply("ok");
             return;
@@ -185,7 +185,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                         Integer httpPort = deployInfos.getHttpPort();
                         if (httpPort != null) {
                             // 代理类部署信息
-                            VxApiDeployInfos proxy = portProxyMap.get(httpPort);
+                            VxApiDeployInfo proxy = portProxyMap.get(httpPort);
                             if (proxy != null && proxy.getHttpPort() != null) {
                                 if (portProxyApplicationMap == null) {
                                     portProxyApplicationMap = new HashMap<>();
@@ -212,9 +212,9 @@ public class DeploymentVerticle extends AbstractVerticle {
                                 }
                                 // 设置备用代理为主代理并将代理的API移动转交给备用代理类,如果没有备用类则当前代理
                                 if (deployInfos.getAppName().equals(proxy.getAppName())) {
-                                    List<VxApiDeployInfos> item = portStandbyProxyMap.get(proxyPort);
+                                    List<VxApiDeployInfo> item = portStandbyProxyMap.get(proxyPort);
                                     if (item != null && item.size() > 0) {
-                                        VxApiDeployInfos standby = item.remove(0);
+                                        VxApiDeployInfo standby = item.remove(0);
                                         Set<String> set = portProxyApplicationMap.get(proxyPort);
                                         if (set != null) {
                                             String standbyAppName = standby.getAppName();
@@ -240,7 +240,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                         Integer httpsPort = deployInfos.getHttpsPort();
                         if (httpsPort != null) {
                             // 代理类部署信息
-                            VxApiDeployInfos proxy = portProxyMap.get(httpsPort);
+                            VxApiDeployInfo proxy = portProxyMap.get(httpsPort);
                             if (proxy != null && proxy.getHttpsPort() != null) {
                                 if (portProxyApplicationMap == null) {
                                     portProxyApplicationMap = new HashMap<>();
@@ -267,9 +267,9 @@ public class DeploymentVerticle extends AbstractVerticle {
                                 }
                                 // 设置备用代理为主代理并将代理的API移动转交给备用代理类,如果没有代理则删除自己的代理
                                 if (deployInfos.getAppName().equals(proxy.getAppName())) {
-                                    List<VxApiDeployInfos> item = portStandbyProxyMap.get(proxyPort);
+                                    List<VxApiDeployInfo> item = portStandbyProxyMap.get(proxyPort);
                                     if (item != null && item.size() > 0) {
-                                        VxApiDeployInfos standby = item.remove(0);
+                                        VxApiDeployInfo standby = item.remove(0);
                                         Set<String> set = portProxyApplicationMap.get(proxyPort);
                                         if (set != null) {
                                             String standbyAppName = standby.getAppName();
@@ -329,7 +329,7 @@ public class DeploymentVerticle extends AbstractVerticle {
             }
         }
         String appName = msg.body().getString("appName");
-        VxApiDeployInfos deployInfos = applicationMaps.get(appName);
+        VxApiDeployInfo deployInfos = applicationMaps.get(appName);
         if (deployInfos == null) {
             msg.reply(ResultFormat.format(HTTPStatusCodeMsgEnum.C1400, "应用尚未启动"));
             LOG.info("启动" + appName + "所有API-->失败:应用尚未启动");
@@ -343,7 +343,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                 // 代理是否启动http服务
                 Integer httpPort = deployInfos.getHttpPort();
                 if (httpPort != null) {
-                    VxApiDeployInfos proxy = portProxyMap.get(httpPort);
+                    VxApiDeployInfo proxy = portProxyMap.get(httpPort);
                     if (proxy != null && proxy.getHttpPort() != null && proxy.getHttpPort().equals(httpPort)
                             && !proxy.getAppName().equals(deployInfos.getAppName())) {
                         Integer proxyPort = proxy.getHttpPort();
@@ -361,7 +361,7 @@ public class DeploymentVerticle extends AbstractVerticle {
                 // 代理是否启动https服务
                 Integer httpsPort = deployInfos.getHttpsPort();
                 if (httpsPort != null) {
-                    VxApiDeployInfos proxy = portProxyMap.get(httpsPort);
+                    VxApiDeployInfo proxy = portProxyMap.get(httpsPort);
                     if (proxy != null && proxy.getHttpsPort() != null && proxy.getHttpsPort().equals(httpsPort)
                             && !proxy.getAppName().equals(deployInfos.getAppName())) {
                         Integer proxyPort = proxy.getHttpsPort();
@@ -469,7 +469,7 @@ public class DeploymentVerticle extends AbstractVerticle {
         }
         String appName = msg.body().getString("appName");
         String apiName = msg.body().getString("apiName");
-        VxApiDeployInfos deployInfos = applicationMaps.get(appName);
+        VxApiDeployInfo deployInfos = applicationMaps.get(appName);
         if (deployInfos == null) {
             msg.reply(-1);
             return;
@@ -479,7 +479,7 @@ public class DeploymentVerticle extends AbstractVerticle {
             // HTTP服务端口启动API
             Integer httpPort = deployInfos.getHttpPort();
             if (httpPort != null) {
-                VxApiDeployInfos proxy = portProxyMap.get(httpPort);
+                VxApiDeployInfo proxy = portProxyMap.get(httpPort);
                 if (proxy != null && proxy.getHttpPort() != null && proxy.getHttpPort().equals(httpPort)
                         && !deployInfos.getAppName().equals(proxy.getAppName())) {
                     startApiService(body.copy(), proxy.getAppName(), true, 1, res -> {
@@ -499,7 +499,7 @@ public class DeploymentVerticle extends AbstractVerticle {
             // HTTPS服务端口启动API
             Integer httpsPort = deployInfos.getHttpsPort();
             if (httpsPort != null) {
-                VxApiDeployInfos proxy = portProxyMap.get(httpsPort);
+                VxApiDeployInfo proxy = portProxyMap.get(httpsPort);
                 if (proxy != null && proxy.getHttpsPort() != null && proxy.getHttpsPort().equals(httpsPort)
                         && !deployInfos.getAppName().equals(proxy.getAppName())) {
                     startApiService(body.copy(), proxy.getAppName(), true, 2, res -> {
@@ -582,7 +582,7 @@ public class DeploymentVerticle extends AbstractVerticle {
         }
         String appName = msg.body().getString("appName");
         String apiName = msg.body().getString("apiName");
-        VxApiDeployInfos deployInfos = applicationMaps.get(appName);
+        VxApiDeployInfo deployInfos = applicationMaps.get(appName);
         if (deployInfos == null) {
             msg.reply(1);
             return;
@@ -590,7 +590,7 @@ public class DeploymentVerticle extends AbstractVerticle {
         vertx.<Integer>executeBlocking(futrue -> {
             Integer httpPort = deployInfos.getHttpPort();
             if (httpPort != null) {
-                VxApiDeployInfos proxy = portProxyMap.get(httpPort);
+                VxApiDeployInfo proxy = portProxyMap.get(httpPort);
                 if (proxy != null && proxy.getHttpPort() != null && proxy.getHttpPort().equals(httpPort)
                         && !deployInfos.getAppName().equals(proxy.getAppName())) {
                     stopApiServiceSingle(proxy.getAppName(), apiName, res -> {
@@ -605,7 +605,7 @@ public class DeploymentVerticle extends AbstractVerticle {
             }
             Integer httpsPort = deployInfos.getHttpsPort();
             if (httpsPort != null) {
-                VxApiDeployInfos proxy = portProxyMap.get(httpsPort);
+                VxApiDeployInfo proxy = portProxyMap.get(httpsPort);
                 if (proxy != null && proxy.getHttpsPort() != null && proxy.getHttpsPort().equals(httpsPort)
                         && !deployInfos.getAppName().equals(proxy.getAppName())) {
                     stopApiServiceSingle(proxy.getAppName(), apiName, res -> {

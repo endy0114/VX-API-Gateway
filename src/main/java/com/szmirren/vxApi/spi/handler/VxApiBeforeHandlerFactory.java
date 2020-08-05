@@ -1,7 +1,7 @@
 package com.szmirren.vxApi.spi.handler;
 
 import com.szmirren.vxApi.core.common.StrUtil;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.json.JsonObject;
 
@@ -34,7 +34,7 @@ public class VxApiBeforeHandlerFactory {
      * @throws NullPointerException
      * @throws ClassNotFoundException
      */
-    public static VxApiBeforeHandler getBeforeHandler(String name, JsonObject options, VxApis api, HttpClient httpClient)
+    public static VxApiBeforeHandler getBeforeHandler(String name, JsonObject options, VxApi api, HttpClient httpClient)
             throws NullPointerException, ClassNotFoundException {
         if (StrUtil.isNullOrEmpty(name)) {
             throw new NullPointerException("获取前置处理器实现-->失败:工厂名字不能为空");

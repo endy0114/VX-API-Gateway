@@ -56,7 +56,7 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
     /**
      * API配置
      */
-    private VxApis api;
+    private VxApi api;
     /**
      * 后端服务策略
      */
@@ -80,7 +80,7 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
      * @throws MalformedURLException 错误的URI路径
      * @throws NullPointerException  少了参数
      */
-    public VxApiRouteHandlerHttpServiceImpl(String appName, boolean isNext, VxApis api, HttpClient httpClient)
+    public VxApiRouteHandlerHttpServiceImpl(String appName, boolean isNext, VxApi api, HttpClient httpClient)
             throws NullPointerException, MalformedURLException {
         super();
         this.thisVertxName = System.getProperty("thisVertxName", "VX-API");
@@ -126,7 +126,7 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
         // 判断后台服务是否有可用连接,有可用连接进行请求,如果没有可用连接进行重试
         if (policy.isHaveService()) {
             // 执行监控
-            VxApiTrackInfos trackInfo = new VxApiTrackInfos(appName, api.getApiName());
+            VxApiTrackInfo trackInfo = new VxApiTrackInfo(appName, api.getApiName());
             trackInfo.setRequestBufferLen(rct.get(VxApiRouteConstant.BODY_KEY_CONTENT_LENGTH));
             // 后台服务连接信息
             VxApiServerURLInfo urlInfo;

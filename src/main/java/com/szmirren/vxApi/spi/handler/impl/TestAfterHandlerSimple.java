@@ -1,6 +1,6 @@
 package com.szmirren.vxApi.spi.handler.impl;
 
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.spi.handler.VxApiAfterHandler;
 
 import io.vertx.core.AsyncResult;
@@ -13,7 +13,7 @@ import io.vertx.ext.web.RoutingContext;
  *
  */
 public class TestAfterHandlerSimple implements VxApiAfterHandler {
-	private VxApis apis;
+	private VxApi apis;
 
 	@Override
 	public void handle(RoutingContext event) {
@@ -27,7 +27,7 @@ public class TestAfterHandlerSimple implements VxApiAfterHandler {
 		event.response().end();
 	}
 
-	public TestAfterHandlerSimple(VxApis api) {
+	public TestAfterHandlerSimple(VxApi api) {
 		super();
 		this.apis = api;
 	}

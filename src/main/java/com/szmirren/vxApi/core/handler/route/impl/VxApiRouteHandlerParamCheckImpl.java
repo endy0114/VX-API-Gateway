@@ -5,7 +5,7 @@ import com.szmirren.vxApi.core.common.VxApiGatewayAttribute;
 import com.szmirren.vxApi.core.common.VxApiRequestBodyHandler;
 import com.szmirren.vxApi.core.entity.VxApiContentType;
 import com.szmirren.vxApi.core.entity.VxApiEntranceParam;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.enums.LoadBalanceEnum;
 import com.szmirren.vxApi.core.enums.ParamPositionEnum;
 import com.szmirren.vxApi.core.enums.ParamSystemVarTypeEnum;
@@ -35,7 +35,7 @@ public class VxApiRouteHandlerParamCheckImpl implements VxApiRouteHandlerParamCh
     /**
      * API配置
      */
-    private VxApis api;
+    private VxApi api;
     /**
      * 主体最大的总长度
      */
@@ -57,7 +57,7 @@ public class VxApiRouteHandlerParamCheckImpl implements VxApiRouteHandlerParamCh
      */
     private List<VxApiParamOptions> otherReqParam;
 
-    public VxApiRouteHandlerParamCheckImpl(VxApis api, long maxContentLength) {
+    public VxApiRouteHandlerParamCheckImpl(VxApi api, long maxContentLength) {
         super();
         this.api = api;
         this.maxContentLength = maxContentLength;
@@ -77,7 +77,8 @@ public class VxApiRouteHandlerParamCheckImpl implements VxApiRouteHandlerParamCh
     @Override
     public void handle(RoutingContext rct) {
         // 当前服务的response
-        HttpServerResponse rctResponse = rct.response().putHeader(VxApiRouteConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
+        HttpServerResponse rctResponse = rct.response()
+                .putHeader(VxApiRouteConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
                 .putHeader(VxApiRouteConstant.CONTENT_TYPE, api.getContentType());
         long contentLength = rct.request().getHeader(VxApiRouteConstant.CONTENT_LENGTH) == null
                 ? 0L

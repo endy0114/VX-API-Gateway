@@ -5,7 +5,7 @@ import com.szmirren.vxApi.core.auth.VxApiRolesConstant;
 import com.szmirren.vxApi.core.common.*;
 import com.szmirren.vxApi.core.enums.ContentTypeEnum;
 import com.szmirren.vxApi.core.enums.HTTPStatusCodeMsgEnum;
-import com.szmirren.vxApi.core.handler.FreeMarkerTemplateHander;
+import com.szmirren.vxApi.core.handler.FreeMarkerTemplateHandler;
 import com.szmirren.vxApi.core.options.VxApiApplicationDTO;
 import com.szmirren.vxApi.core.options.VxApisDTO;
 import io.vertx.core.AbstractVerticle;
@@ -81,7 +81,7 @@ public class ClientVerticle extends AbstractVerticle {
         // 通过html的方式管理应用网关
         // TemplateEngine create = FreeMarkerTemplateEngine.create(vertx);
         // TemplateHandler tempHandler = TemplateHandler.create(create, getTemplateRoot(), CONTENT_VALUE_HTML_UTF8);
-        TemplateHandler tempHandler = new FreeMarkerTemplateHander(vertx, getTemplateRoot(), CONTENT_VALUE_HTML_UTF8);
+        TemplateHandler tempHandler = new FreeMarkerTemplateHandler(vertx, getTemplateRoot(), CONTENT_VALUE_HTML_UTF8);
         router.getWithRegex(".+\\.ftl").handler(tempHandler);
         // 权限相关
         router.route("/static/*").handler(VxApiClientStaticAuth.create());

@@ -3,8 +3,8 @@ package com.szmirren.vxApi.core.verticle;
 import com.szmirren.vxApi.core.common.StrUtil;
 import com.szmirren.vxApi.core.common.VxApiEventBusAddressConstant;
 import com.szmirren.vxApi.core.common.VxApiGatewayAttribute;
-import com.szmirren.vxApi.core.entity.VxApiTrackInfos;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.enums.ApiServerTypeEnum;
 import com.szmirren.vxApi.core.enums.HttpMethodEnum;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerApiLimit;
@@ -377,7 +377,7 @@ public class VxApiApplication extends AbstractVerticle {
         JsonObject body = msg.body().getJsonObject("api");
         VxApisDTO dto = VxApisDTO.fromJson(body);
         if (dto != null) {
-            VxApis api = new VxApis(dto);
+            VxApi api = new VxApi(dto);
             // 是否代理启动API到当前应用
             boolean otherRouteAdd = msg.body().getBoolean("elseRouteToThis", false);
             if (otherRouteAdd) {
@@ -445,7 +445,7 @@ public class VxApiApplication extends AbstractVerticle {
      *
      * @param result
      */
-    public void addHttpRouter(VxApis api, Handler<AsyncResult<Boolean>> result) {
+    public void addHttpRouter(VxApi api, Handler<AsyncResult<Boolean>> result) {
         addRouteToRouter(api, httpRouter, httpRouteMaps, result);
     }
 
@@ -454,7 +454,7 @@ public class VxApiApplication extends AbstractVerticle {
      *
      * @param result
      */
-    public void addHttpsRouter(VxApis api, Handler<AsyncResult<Boolean>> result) {
+    public void addHttpsRouter(VxApi api, Handler<AsyncResult<Boolean>> result) {
         addRouteToRouter(api, httpsRouter, httpsRouteMaps, result);
     }
 
@@ -466,7 +466,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param routeMaps 要添加的route集合
      * @param result    结果
      */
-    public void addRouteToRouter(VxApis api, Router router, Map<String, List<Route>> routeMaps, Handler<AsyncResult<Boolean>> result) {
+    public void addRouteToRouter(VxApi api, Router router, Map<String, List<Route>> routeMaps, Handler<AsyncResult<Boolean>> result) {
         vertx.executeBlocking(fut -> {
             List<Route> routes = new ArrayList<>();// 存储部署的路由
             // 流量限制处理器
@@ -564,7 +564,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param route 路由
      * @throws Exception
      */
-    public void initAuthHandler(VxApis api, Route route) throws Exception {
+    public void initAuthHandler(VxApi api, Route route) throws Exception {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -586,7 +586,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param route 路由
      * @throws Exception
      */
-    public void initBeforeHandler(VxApis api, Route route) throws Exception {
+    public void initBeforeHandler(VxApi api, Route route) throws Exception {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -608,7 +608,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param route 路由
      * @throws Exception
      */
-    public void initAfterHandler(VxApis api, Route route) throws Exception {
+    public void initAfterHandler(VxApi api, Route route) throws Exception {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -629,7 +629,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param api
      * @param route
      */
-    public void initApiLimit(VxApis api, Route route) {
+    public void initApiLimit(VxApi api, Route route) {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -654,7 +654,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param api
      * @param route
      */
-    public void initParamCheck(VxApis api, Route route) {
+    public void initParamCheck(VxApi api, Route route) {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -676,7 +676,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param route
      * @throws Exception
      */
-    public void initServerHandler(boolean isNext, VxApis api, Route route) throws Exception {
+    public void initServerHandler(boolean isNext, VxApi api, Route route) throws Exception {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -712,7 +712,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param api
      * @param route
      */
-    public void initExceptionHandler(VxApis api, Route route) {
+    public void initExceptionHandler(VxApi api, Route route) {
         route.path(api.getPath());
         if (api.getMethod() != HttpMethodEnum.ALL) {
             route.method(HttpMethod.valueOf(api.getMethod().getVal()));
@@ -723,7 +723,7 @@ public class VxApiApplication extends AbstractVerticle {
         route.failureHandler(rct -> {
             rct.response().putHeader(SERVER, VxApiGatewayAttribute.FULL_NAME).putHeader(CONTENT_TYPE, api.getContentType())
                     .setStatusCode(api.getResult().getFailureStatus()).end(api.getResult().getFailureExample());
-            VxApiTrackInfos infos = new VxApiTrackInfos(appName, api.getApiName());
+            VxApiTrackInfo infos = new VxApiTrackInfo(appName, api.getApiName());
             if (rct.failure() != null) {
                 infos.setErrMsg(rct.failure().getMessage());
                 infos.setErrStackTrace(rct.failure().getStackTrace());
@@ -742,7 +742,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param route
      * @throws Exception
      */
-    public void serverCustomTypeHandler(boolean isNext, VxApis api, Route route) throws Exception {
+    public void serverCustomTypeHandler(boolean isNext, VxApi api, Route route) throws Exception {
         JsonObject body = api.getServerEntrance().getBody();
         VxApiCustomHandlerOptions options = VxApiCustomHandlerOptions.fromJson(body);
         if (options == null) {
@@ -764,7 +764,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @param route
      * @throws NullPointerException
      */
-    public void serverRedirectTypeHandler(boolean isNext, VxApis api, Route route) throws NullPointerException {
+    public void serverRedirectTypeHandler(boolean isNext, VxApi api, Route route) throws NullPointerException {
         VxApiRouteHandlerRedirectType redirectTypeHandler = VxApiRouteHandlerRedirectType.create(isNext, api);
         route.handler(redirectTypeHandler);
     }
@@ -778,7 +778,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @throws NullPointerException
      * @throws MalformedURLException
      */
-    public void serverHttpTypeHandler(boolean isNext, VxApis api, Route route) throws NullPointerException, MalformedURLException {
+    public void serverHttpTypeHandler(boolean isNext, VxApi api, Route route) throws NullPointerException, MalformedURLException {
         VxApiRouteHandlerHttpService httpTypeHandler = VxApiRouteHandlerHttpService.create(appName, isNext, api, httpClient);
         route.handler(httpTypeHandler);
     }

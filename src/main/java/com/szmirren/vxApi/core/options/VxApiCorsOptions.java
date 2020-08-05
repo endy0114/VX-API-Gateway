@@ -19,7 +19,10 @@ public class VxApiCorsOptions {
 	private String allowedOrigin;
 	private boolean allowCredentials;
 	private int maxAgeSeconds;
-	private Set<HttpMethod> allowedMethods;// HttpMethod依赖io.vertx.core.http.HttpMethod
+	/**
+	 * HttpMethod依赖io.vertx.core.http.HttpMethod
+	 */
+	private Set<HttpMethod> allowedMethods;
 	private Set<String> allowedHeaders;
 	private Set<String> exposedHeaders;
 

@@ -18,8 +18,8 @@ import com.szmirren.vxApi.core.common.VxApiGatewayAttribute;
 import com.szmirren.vxApi.core.entity.VxApiEntranceParam;
 import com.szmirren.vxApi.core.entity.VxApiServerURLInfo;
 import com.szmirren.vxApi.core.entity.VxApiServerURLPollingPolicy;
-import com.szmirren.vxApi.core.entity.VxApiTrackInfos;
-import com.szmirren.vxApi.core.entity.VxApis;
+import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.enums.LoadBalanceEnum;
 import com.szmirren.vxApi.core.enums.ParamPositionEnum;
 import com.szmirren.vxApi.core.enums.ParamSystemVarTypeEnum;
@@ -85,7 +85,7 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
 	/**
 	 * api
 	 */
-	private VxApis api;
+	private VxApi api;
 	/**
 	 * 服务端配置文件
 	 */
@@ -129,7 +129,7 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
 					return;
 				}
 				// 执行监控
-				VxApiTrackInfos trackInfo = new VxApiTrackInfos(api.getAppName(), api.getApiName());
+				VxApiTrackInfo trackInfo = new VxApiTrackInfo(api.getAppName(), api.getApiName());
 				trackInfo.setRequestBufferLen(rct.getBody() == null ? 0 : rct.getBody().length());
 				String requestPath = urlInfo.getUrl();
 				MultiMap headers = new CaseInsensitiveHeaders();
@@ -230,7 +230,7 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
 	 * @throws NullPointerException
 	 * @throws MalformedURLException
 	 */
-	public SessionTokenGrantAuthHandler(JsonObject option, VxApis apis, HttpClient httpClient)
+	public SessionTokenGrantAuthHandler(JsonObject option, VxApi apis, HttpClient httpClient)
 			throws NullPointerException, MalformedURLException {
 		if (option.getValue("saveTokenName") instanceof String) {
 			this.saveTokenName = option.getString("saveTokenName");
