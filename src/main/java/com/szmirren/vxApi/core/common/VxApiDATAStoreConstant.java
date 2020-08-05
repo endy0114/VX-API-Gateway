@@ -44,97 +44,96 @@ package com.szmirren.vxApi.core.common;
  * <li>内容 = BLACKLIST_CONTENT_COLUMN 黑名单内容在json中的名字</li>
  * </ul>
  * <p>
- * 
- * @author <a href="http://szmirren.com">Mirren</a>
  *
+ * @author <a href="http://szmirren.com">Mirren</a>
  */
 public interface VxApiDATAStoreConstant {
-	// ==============================================
-	// ==================应用网关表结构=================
-	// ==============================================
-	/**
-	 * 网关应用的表名
-	 */
-	static final String APPLICATION_TABLE_NAME = "vx_api_application";
-	/**
-	 * 网关应用的主键列
-	 */
-	static final String APPLICATION_ID_COLUMN = "name";
-	/**
-	 * 网关应用json字符串内容的列名
-	 */
-	static final String APPLICATION_CONTENT_COLUMN = "content";
+    // ==============================================
+    // ==================应用网关表结构=================
+    // ==============================================
+    /**
+     * 网关应用的表名
+     */
+    String APPLICATION_TABLE_NAME = "vx_api_application";
+    /**
+     * 网关应用的主键列
+     */
+    String APPLICATION_ID_COLUMN = "name";
+    /**
+     * 网关应用json字符串内容的列名
+     */
+    String APPLICATION_CONTENT_COLUMN = "content";
 
-	// ==================应用网关传输中获取内容的名字=================
-	/**
-	 * 网关应用通讯传输中获取json中存放主键的属性名
-	 */
-	static final String APPLICATION_ID_NAME = "name";
-	/**
-	 * 网关应用通讯传输中获取json中存放json字符串对象的属性名
-	 */
-	static final String APPLICATION_CONTENT_NAME = "content";
+    // ==================应用网关传输中获取内容的名字=================
+    /**
+     * 网关应用通讯传输中获取json中存放主键的属性名
+     */
+    String APPLICATION_ID_NAME = "name";
+    /**
+     * 网关应用通讯传输中获取json中存放json字符串对象的属性名
+     */
+    String APPLICATION_CONTENT_NAME = "content";
 
-	// ==============================================
-	// ==================API表结构====================
-	// ==============================================
+    // ==============================================
+    // ==================API表结构====================
+    // ==============================================
 
-	/**
-	 * 存放API的表名
-	 */
-	static final String API_TABLE_NAME = "vx_api_apis";
-	/**
-	 * 存放API的主键列
-	 */
-	static final String API_ID_COLUMN = "name";
-	/**
-	 * 存放API表中网关应用主键的列
-	 */
-	static final String API_APP_ID_COLUMN = "app_name";
-	/**
-	 * 存放API,json字符串内容的列名
-	 */
-	static final String API_CONTENT_COLUMN = "content";
+    /**
+     * 存放API的表名
+     */
+    String API_TABLE_NAME = "vx_api_apis";
+    /**
+     * 存放API的主键列
+     */
+    String API_ID_COLUMN = "name";
+    /**
+     * 存放API表中网关应用主键的列
+     */
+    String API_APP_ID_COLUMN = "app_name";
+    /**
+     * 存放API,json字符串内容的列名
+     */
+    String API_CONTENT_COLUMN = "content";
 
-	// ==================API传输中获取内容的名字=================
+    // ==================API传输中获取内容的名字=================
 
-	/**
-	 * API通讯传输中获取json中存放主键的属性名
-	 */
-	static final String API_ID_NAME = "name";
-	/**
-	 * API通讯传输中获取json中存放应用网关主键的属性名
-	 */
-	static final String API_APP_ID_NAME = "appName";
-	/**
-	 * API通讯传输中获取json中存放json字符串对象的属性名
-	 */
-	static final String API_CONTENT_NAME = "content";
+    /**
+     * API通讯传输中获取json中存放主键的属性名
+     */
+    String API_ID_NAME = "name";
+    /**
+     * API通讯传输中获取json中存放应用网关主键的属性名
+     */
+    String API_APP_ID_NAME = "appName";
+    /**
+     * API通讯传输中获取json中存放json字符串对象的属性名
+     */
+    String API_CONTENT_NAME = "content";
 
-	// ==============================================
-	// ==================黑名单列表表结构================
-	// ==============================================
-	/**
-	 * 黑名单列表的表名
-	 */
-	static final String BLACKLIST_TABLE_NAME = "vx_api_blacklist";
-	/**
-	 * 黑名单列表的主键列
-	 */
-	static final String BLACKLIST_ID_COLUMN = "name";
-	/**
-	 * 黑名单列表jsonArray字符串内容的列名
-	 */
-	static final String BLACKLIST_CONTENT_COLUMN = "content";
+    // ==============================================
+    // ==================黑名单列表表结构================
+    // ==============================================
+    /**
+     * 黑名单列表的表名
+     */
+    String BLACKLIST_TABLE_NAME = "vx_api_blacklist";
+    /**
+     * 黑名单列表的主键列
+     */
+    String BLACKLIST_ID_COLUMN = "name";
+    /**
+     * 黑名单列表jsonArray字符串内容的列名
+     */
+    String BLACKLIST_CONTENT_COLUMN = "content";
 
-	// ==================应用网关传输中获取内容的名字=================
-	/**
-	 * 黑名单列表通讯传输中获取json中存放主键的属性名
-	 */
-	static final String BLACKLIST_ID_NAME = "blacklist";
-	/**
-	 * 黑名单列表通讯传输中获取json中存放json字符串对象的属性名
-	 */
-	static final String BLACKLIST_CONTENT_NAME = "content";
+    // ==================应用网关传输中获取内容的名字=================
+    /**
+     * 黑名单列表通讯传输中获取json中存放主键的属性名
+     */
+    String BLACKLIST_ID_NAME = "blacklist";
+    /**
+     * 黑名单列表通讯传输中获取json中存放json字符串对象的属性名
+     */
+    String BLACKLIST_CONTENT_NAME = "content";
 
 }

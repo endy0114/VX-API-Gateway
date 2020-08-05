@@ -82,7 +82,7 @@ public class VxApiRouteHandlerParamCheckImpl implements VxApiRouteHandlerParamCh
                 .putHeader(VxApiRouteConstant.CONTENT_TYPE, api.getContentType());
         long contentLength = rct.request().getHeader(VxApiRouteConstant.CONTENT_LENGTH) == null
                 ? 0L
-                : StrUtil.getlongTry(rct.request().getHeader(VxApiRouteConstant.CONTENT_LENGTH));
+                : StrUtil.getLongTry(rct.request().getHeader(VxApiRouteConstant.CONTENT_LENGTH));
         if (maxContentLength > 0 && contentLength > maxContentLength) {
             if (LOG.isDebugEnabled()) {
                 LOG.info("API:" + api.getApiName() + "接收到请求Content-Length:" + contentLength + ",规定的最大值为:" + maxContentLength);

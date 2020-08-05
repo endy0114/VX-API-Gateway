@@ -4,7 +4,6 @@ import com.szmirren.vxApi.core.entity.VxApiContentType;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -76,8 +75,8 @@ public class VxApiRequestBodyHandler implements Handler<Buffer> {
             }
         } else if (contentType.isUrlencoded()) {
             MultiMap decoderUriParams = HttpUtils.decoderUriParams(bodyBuffer.toString(), contentType.getCharset());
-			body.addAll(decoderUriParams);
-		}
+            body.addAll(decoderUriParams);
+        }
         return body;
     }
 

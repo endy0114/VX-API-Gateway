@@ -230,7 +230,7 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
                     }
                     // 统计响应长度
                     String repLen = resp.getHeader(VxApiRouteConstant.CONTENT_LENGTH);
-                    trackInfo.setResponseBufferLen(repLen == null ? 0 : StrUtil.getintTry(repLen));
+                    trackInfo.setResponseBufferLen(repLen == null ? 0 : StrUtil.getIntTry(repLen));
                     trackInfo.setEndTime(Instant.now());
                     rct.vertx().eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_TRACK_INFO, trackInfo.toJson());
                 });
