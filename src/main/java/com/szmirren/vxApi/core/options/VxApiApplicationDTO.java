@@ -211,7 +211,7 @@ public class VxApiApplicationDTO {
                 options.setDecoderInitialBufferSize(((Number) obj.getValue("decoderInitialBufferSize")).intValue());
             }
             if (obj.getValue("maxPoolSize") instanceof Number) {
-                options.setMaxHeaderSize(((Number) obj.getValue("maxPoolSize")).intValue());
+                options.setMaxPoolSize(((Number) obj.getValue("maxPoolSize")).intValue());
             }
             if (obj.getValue("maxInitialLineLength") instanceof Number) {
                 options.setMaxInitialLineLength(((Number) obj.getValue("maxInitialLineLength")).intValue());

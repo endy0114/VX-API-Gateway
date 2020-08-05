@@ -121,7 +121,8 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
         // 用户请求的Header
         MultiMap rctHeaders = rctRequest.headers();
         // 当前服务的response
-        HttpServerResponse rctResponse = rct.response().putHeader(VxApiRouteConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
+        HttpServerResponse rctResponse = rct.response()
+                .putHeader(VxApiRouteConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
                 .putHeader(VxApiRouteConstant.CONTENT_TYPE, api.getContentType());
         // 判断后台服务是否有可用连接,有可用连接进行请求,如果没有可用连接进行重试
         if (policy.isHaveService()) {
@@ -175,16 +176,16 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
                         trackInfo.setSuccessful(false);
                         trackInfo.setErrMsg("执行请求后端服务的异常:Response is closed,可能是用户关闭了请求");
                         trackInfo.setErrStackTrace(null);
-					} else {
+                    } else {
                         // 记录与后台交互发生错误
                         trackInfo.setSuccessful(false);
                         if (e != null) {
                             trackInfo.setErrMsg(e.getMessage());
                             trackInfo.setErrStackTrace(e.getStackTrace());
                         }
-					}
-					rct.vertx().eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_TRACK_INFO, trackInfo.toJson());
-					// 如果是连接异常返回无法连接的错误信息,其他异常返回相应的异常
+                    }
+                    rct.vertx().eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_TRACK_INFO, trackInfo.toJson());
+                    // 如果是连接异常返回无法连接的错误信息,其他异常返回相应的异常
                     try {
                         if (e instanceof ConnectException || e instanceof TimeoutException) {
                             // 提交连接请求失败
@@ -213,9 +214,7 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
                 // 透传header
                 Set<String> tranHeaders = api.getResult().getTranHeaders();
                 if (tranHeaders != null && tranHeaders.size() > 0) {
-                    tranHeaders.forEach(h -> {
-                        rctResponse.putHeader(h, resp.getHeader(h) == null ? "" : resp.getHeader(h));
-                    });
+                    tranHeaders.forEach(h -> rctResponse.putHeader(h, resp.getHeader(h) == null ? "" : resp.getHeader(h)));
                 }
                 Pump respPump = Pump.pump(resp, rctResponse);
                 respPump.start();
@@ -280,10 +279,10 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
                 rct.next();
             } else {
                 rctResponse.putHeader(VxApiRouteConstant.DATE, StrUtil.getRfc822DateFormat(new Date()))
-                        .setStatusCode(api.getResult().getCantConnServerStatus()).end(api.getResult().getCantConnServerExample());
+                        .setStatusCode(api.getResult().getCantConnServerStatus())
+                        .end(api.getResult().getCantConnServerExample());
             }
-            LOG.warn(
-                    String.format("应用:%s -> API:%s,后台服务已不存在可用的后台服务URL,VX将以设定的重试时间:%d进行重试", appName, api.getApiName(), serOptions.getRetryTime()));
+            LOG.warn(String.format("应用:%s -> API:%s,后台服务已不存在可用的后台服务URL,VX将以设定的重试时间:%d进行重试", appName, api.getApiName(), serOptions.getRetryTime()));
             // 进入重试连接后台服务
             retryConnServer(rct.vertx());
         }

@@ -432,7 +432,7 @@
                                             	<input type="checkbox" id="bodyAsQuery" <#if context.api.bodyAsQuery?exists><#if context.api.bodyAsQuery == true >checked="checked"</#if></#if>  > Body参数可以被Query获取
                                             </label>
                                             <a class="console-button console-button-green console-button-tiny addParams" style="width: 85px">
-                                                <i ng-if="!!icon" class="icon-add"></i>
+                                                <i ng-if="!!icon" class="icon-add">新增</i>
                                                 <span>
                                                     <span class="ng-scope ng-binding">增加一条</span>
                                                 </span>

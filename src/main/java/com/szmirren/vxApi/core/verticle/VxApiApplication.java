@@ -526,7 +526,7 @@ public class VxApiApplication extends AbstractVerticle {
             } catch (Exception e) {
                 LOG.error(appName + ":API:" + api.getApiName() + "添加服务处理器-->失败:" + e);
                 serverRoute.remove();
-                routes.forEach(r -> r.remove());// 清空已经成功的路由
+                routes.forEach(Route::remove);// 清空已经成功的路由
                 fut.fail(e);
                 return;
             }
@@ -539,7 +539,7 @@ public class VxApiApplication extends AbstractVerticle {
                 } catch (Exception e) {
                     LOG.error(appName + ":API:" + api.getApiName() + "添加后置处理器-->失败:" + e);
                     afterRoute.remove();
-                    routes.forEach(r -> r.remove());// 清空已经成功的路由
+                    routes.forEach(Route::remove);// 清空已经成功的路由
                     fut.fail(e);
                     return;
                 }
