@@ -7,8 +7,8 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * VX-API内部使用的客户端,既可以让他做操作VX-API相关
@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class CLIVerticle extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(CLIVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CLIVerticle.class);
 
     /**
      * 当前Vertx的唯一标识
@@ -51,15 +51,15 @@ public class CLIVerticle extends AbstractVerticle {
                             Integer success = handler.result().getInteger("success", 0);
                             Integer fail = handler.result().getInteger("fail", 0);
                             LOG.info("cli->执行启动所有网关应用与API-->结果:成功数量:" + success + ",失败数量:" + fail);
-							future.complete();
+                            future.complete();
                         });
                     } else {
                         LOG.info("cli->执行启动所有网关应用与API-->结果:网关应用数量为:0");
-						future.complete();
+                        future.complete();
                     }
                 } else {
                     LOG.error("cli->执行启动所有网关应用与API-->失败:" + reply.cause());
-					future.fail(reply.cause());
+                    future.fail(reply.cause());
                 }
             });
         }, result -> {

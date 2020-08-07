@@ -14,8 +14,8 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.ResponseContentTypeHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 
@@ -25,7 +25,7 @@ import java.text.MessageFormat;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class CURLClientVerticle extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(CURLClientVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CURLClientVerticle.class);
 
     /**
      * 返回的CONTENT_TYPE值JSON

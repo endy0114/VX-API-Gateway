@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+<!-- 
+scan:
+	当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+scanPeriod:
+	设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+debug:
+	当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+ -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!--
+        用来定义变量值的标签，<property> 有两个属性，name和value；其中name的值是变量的名称，value的值时变量定义的值。
+        通过<property>定义的值会被插入到logger上下文中。定义变量后，可以使“${}”来使用变量。
+     -->
+    <property name="LOG_ROOT_PATH" value="${catalina.home}/logs"/>
+    <property name="LOG_FILE_NAME" value="artapp_web"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <!--
+                %d 时间
+                %-5level 日志级别
+                %logger 包名
+                %X{sessionId} 从log的上下文中取sessionId的值
+                %m  输出应用输出的日志信息
+                %n  和平台无关的换行
+             -->
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | %logger.%M\(%L\) | %X{transName} | %X{userId} | %m%n</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_ROOT_PATH}/${LOG_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志路径配置，当日志满足配置条件时，日志自动生成压缩文件 -->
+            <fileNamePattern>${LOG_ROOT_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <!-- 日志保留期限设置，单位为：天，超过设置值的日志文件回滚 -->
+            <MaxHistory>3</MaxHistory>
+            <!-- 设置日志文件大小切分规则，例如：当日志文件大小为100M时，生成一个压缩文件 -->
+            <maxFileSize>300MB</maxFileSize>
+            <!-- 日志总大小为10G -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | %thread | %-5level | %logger.%M\(%L\) | %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!--错误日志统一输出到这里-->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_ROOT_PATH}/${LOG_FILE_NAME}_error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${LOG_ROOT_PATH}/${LOG_FILE_NAME}_error.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>10</MaxHistory>
+            <!-- 单个日志大小 -->
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | %thread | %-5level | %logger.%M\(%L\) | %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- 所有error日志都在这里-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+
+    <root>
+        <level value="debug"/>
+        <appender-ref ref="CONSOLE"/>
+        <!-- 生产、测试环境打开 -->
+<!--        <appender-ref ref="FILE" />-->
+<!--        <appender-ref ref="ERROR" />-->
+    </root>
+
+</configuration>

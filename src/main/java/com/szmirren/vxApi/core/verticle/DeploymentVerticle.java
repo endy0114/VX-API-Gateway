@@ -9,8 +9,8 @@ import io.vertx.core.*;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -20,7 +20,7 @@ import java.util.*;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class DeploymentVerticle extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(DeploymentVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeploymentVerticle.class);
     /**
      * 存储已经在运行了的项目
      */

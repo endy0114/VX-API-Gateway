@@ -1,18 +1,9 @@
 package com.szmirren.vxApi.core;
 
-import com.szmirren.vxApi.cluster.VxApiClusterManagerFactory;
-import com.szmirren.vxApi.core.common.PathUtil;
 import io.netty.util.internal.logging.InternalLoggerFactory;
-import io.netty.util.internal.logging.Log4J2LoggerFactory;
+import io.netty.util.internal.logging.Slf4JLoggerFactory;
 import io.vertx.core.Launcher;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.FileSystemException;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.spi.cluster.ClusterManager;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -42,8 +33,8 @@ public class VxApiLauncher extends Launcher {
         String thisVertxName = UUID.randomUUID().toString() + LocalTime.now().getNano();
         // 设置当前系统Vertx的唯一标识
         System.setProperty("thisVertxName", thisVertxName);
-        InternalLoggerFactory.setDefaultFactory(Log4J2LoggerFactory.INSTANCE);
-        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.Log4j2LogDelegateFactory");
+        InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
+        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
         System.setProperty("vertx.disableDnsResolver", "true");
         new VxApiLauncher().dispatch(args);
     }

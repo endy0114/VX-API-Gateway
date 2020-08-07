@@ -9,8 +9,8 @@ import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.time.Duration;
@@ -26,7 +26,7 @@ import java.util.Map;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class SysVerticle extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(SysVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SysVerticle.class);
 
     /**
      * VX-API的启动时间
@@ -171,6 +171,8 @@ public class SysVerticle extends AbstractVerticle {
             result.put("requestVxApiCount", requestVxApiCount);
             result.put("requestHttpApiCount", requestHttpApiCount);
             result.put("currentHttpApiProcessingCount", currentHttpApiProcessingCount);
+            //黑名单信息
+            result.put("content",res.getJsonArray("content"));
             // 返回消息
             msg.reply(result);
         }).onFailure(err -> {

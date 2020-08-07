@@ -3,9 +3,9 @@ package com.szmirren.vxApi.core.handler.route.impl;
 import com.szmirren.vxApi.core.common.StrUtil;
 import com.szmirren.vxApi.core.common.VxApiGatewayAttribute;
 import com.szmirren.vxApi.core.common.VxApiRequestBodyHandler;
+import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.entity.VxApiContentType;
 import com.szmirren.vxApi.core.entity.VxApiEntranceParam;
-import com.szmirren.vxApi.core.entity.VxApi;
 import com.szmirren.vxApi.core.enums.LoadBalanceEnum;
 import com.szmirren.vxApi.core.enums.ParamPositionEnum;
 import com.szmirren.vxApi.core.enums.ParamSystemVarTypeEnum;
@@ -20,8 +20,8 @@ import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ import java.util.*;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class VxApiRouteHandlerParamCheckImpl implements VxApiRouteHandlerParamCheck {
-    private static final Logger LOG = LogManager.getLogger(VxApiRouteHandlerParamCheckImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VxApiRouteHandlerParamCheckImpl.class);
     /**
      * API配置
      */

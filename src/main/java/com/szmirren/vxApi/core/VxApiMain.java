@@ -7,8 +7,8 @@ import com.szmirren.vxApi.core.common.VxApiEventBusAddressConstant;
 import com.szmirren.vxApi.core.verticle.*;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class VxApiMain extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(VxApiMain.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VxApiMain.class);
     /**
      * 使用集群的模式的默认值
      */
@@ -48,7 +48,13 @@ public class VxApiMain extends AbstractVerticle {
                     }));
                     // 启动数据服务Verticle
                     futures.add(Future.<String>future(data -> {
-                        vertx.deployVerticle(DATAVerticle.class.getName(), new DeploymentOptions(option).setConfig(dataConfig), data);
+                        String type = dataConfig.getString("type", "sqlite");
+                        LOG.debug("当前使用的数据库是：{}", type);
+                        if ("mysql".equals(type)) {
+                            vertx.deployVerticle(MySQLDataVerticle.class.getName(), new DeploymentOptions(option).setConfig(dataConfig.getJsonObject("mysql")), data);
+                        } else if ("sqlite".equals(type)) {
+                            vertx.deployVerticle(DATAVerticle.class.getName(), new DeploymentOptions(option).setConfig(dataConfig.getJsonObject("sqlite")), data);
+                        }
                     }));
                     // 启动应用服务Verticle
                     futures.add(Future.<String>future(deploy -> {

@@ -24,8 +24,8 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.*;
 import io.vertx.ext.web.sstore.ClusteredSessionStore;
 import io.vertx.ext.web.sstore.LocalSessionStore;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -37,7 +37,7 @@ import java.time.Instant;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class ClientVerticle extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(ClientVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClientVerticle.class);
 
     /**
      * 返回的CONTENT_TYPE值JSON
@@ -302,21 +302,19 @@ public class ClientVerticle extends AbstractVerticle {
         } else {
             HttpServerResponse response = rct.response().putHeader(CONTENT_TYPE, CONTENT_VALUE_HTML_UTF8);
             // 查看应用使用已经启动
-            Future<JsonObject> onlineFutrue = Future.future();
-            onlineFutrue.setHandler(res -> {
-                vertx.eventBus().<Boolean>request(thisVertxName + VxApiEventBusAddressConstant.DEPLOY_APP_IS_ONLINE, name, dep -> {
-                    if (dep.succeeded()) {
-                        JsonObject body = new JsonObject(res.result().getString("content"));
-                        body.put("online", dep.result().body());
-                        JsonObject context = new JsonObject();
-                        context.put("app", body);
-                        rct.put("context", context);
-                        rct.reroute("/getAPP.ftl");
-                    } else {
-                        response.end(dep.cause().toString());
-                    }
-                });
-            });
+            Promise<JsonObject> onlineFuture = Promise.promise();
+            onlineFuture.future().onComplete(res -> vertx.eventBus().<Boolean>request(thisVertxName + VxApiEventBusAddressConstant.DEPLOY_APP_IS_ONLINE, name, dep -> {
+                if (dep.succeeded()) {
+                    JsonObject body = new JsonObject(res.result().getString("content"));
+                    body.put("online", dep.result().body());
+                    JsonObject context = new JsonObject();
+                    context.put("app", body);
+                    rct.put("context", context);
+                    rct.reroute("/getAPP.ftl");
+                } else {
+                    response.end(dep.cause().toString());
+                }
+            }));
 
             LOG.info(MessageFormat.format("[user : {0}] 执行查看应用-->{1}", rct.session().get("userName"), name));
             vertx.eventBus().<JsonObject>request(thisVertxName + VxApiEventBusAddressConstant.GET_APP, name, res -> {
@@ -326,7 +324,7 @@ public class ClientVerticle extends AbstractVerticle {
                         response.setStatusCode(404).end(_404);
                         return;
                     }
-                    onlineFutrue.complete(body);
+                    onlineFuture.complete(body);
                 } else {
                     response.end(res.cause().toString());
                 }

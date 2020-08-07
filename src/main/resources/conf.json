@@ -1,29 +1,46 @@
 {
-	"cliConfig": {
-		"startEverything": true
-	},
-	"cluster": {
-		"clusterType": "NONE",
-		"getVxApiConfFromCluster": false,
-		"clusterConf": {
-			"zookeeperHosts": "127.0.0.1",
-			"sessionTimeout": 20000,
-			"connectTimeout": 3000,
-			"rootPath": "io.vertx",
-			"vxApiConfPath": "/io.vertx/vx.api.gateway/conf",
-			"retry": {
-				"initialSleepTime": 100,
-				"intervalTimes": 10000,
-				"maxTimes": 5
-			}
-		}
-	},
-	"dataConfig": {
-		"provider_class": "com.szmirren.vxApi.core.common.DataSourceProviderOfDruid",
-		"url": "jdbc:sqlite:configDB.db",
-		"driver_class": "org.sqlite.JDBC"
-	},
-	"clientConfig": {
-		"clientPort": 5256
-	}
+  "cliConfig": {
+    "startEverything": true
+  },
+  "cluster": {
+    "clusterType": "NONE",
+    "getVxApiConfFromCluster": false,
+    "clusterConf": {
+      "zookeeperHosts": "127.0.0.1",
+      "sessionTimeout": 20000,
+      "connectTimeout": 3000,
+      "rootPath": "io.vertx",
+      "vxApiConfPath": "/io.vertx/vx.api.gateway/conf",
+      "retry": {
+        "initialSleepTime": 100,
+        "intervalTimes": 10000,
+        "maxTimes": 5
+      }
+    }
+  },
+  "dataConfig": {
+    "type": "sqlite",
+    "mysql": {
+      "desc": "建议生产使用",
+      "host": "localhost",
+      "port": 3306,
+      "user": "admin",
+      "password": "admin",
+      "dataBase": "vx_gateway",
+      "cachePreparedStatements": true,
+      "idleTimeout": 30000,
+      "connectTimeout": 60000,
+      "characterEncoding": "utf-8",
+      "maxSize": 10
+    },
+    "sqlite": {
+      "desc": "测试或者演示使用，换成其他的数据库也应该能使用，但是可能会有部分SQL不兼容的情况",
+      "provider_class": "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider",
+      "jdbcUrl": "jdbc:sqlite:configDB.db",
+      "driverClassName": "org.sqlite.JDBC"
+    }
+  },
+  "clientConfig": {
+    "clientPort": 5256
+  }
 }

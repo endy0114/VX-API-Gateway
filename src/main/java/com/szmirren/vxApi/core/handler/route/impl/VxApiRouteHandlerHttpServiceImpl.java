@@ -19,8 +19,8 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.streams.Pump;
 import io.vertx.ext.web.RoutingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.ConnectException;
 import java.net.MalformedURLException;
@@ -40,7 +40,7 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
     /**
      * 日志处理
      */
-    private static final Logger LOG = LogManager.getLogger(VxApiRouteHandlerHttpServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VxApiRouteHandlerHttpServiceImpl.class);
     /**
      * 当前Vertx的唯一标识
      */

@@ -3,8 +3,8 @@ package com.szmirren.vxApi.core.verticle;
 import com.szmirren.vxApi.core.common.StrUtil;
 import com.szmirren.vxApi.core.common.VxApiEventBusAddressConstant;
 import com.szmirren.vxApi.core.common.VxApiGatewayAttribute;
-import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
 import com.szmirren.vxApi.core.entity.VxApi;
+import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
 import com.szmirren.vxApi.core.enums.ApiServerTypeEnum;
 import com.szmirren.vxApi.core.enums.HttpMethodEnum;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerApiLimit;
@@ -36,8 +36,8 @@ import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.ClusteredSessionStore;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.SessionStore;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
@@ -49,7 +49,7 @@ import java.util.*;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class VxApiApplication extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(VxApiApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VxApiApplication.class);
 
     /**
      * HTTP服务器route集
@@ -311,7 +311,7 @@ public class VxApiApplication extends AbstractVerticle {
                 if (vertx.isNativeTransportEnabled()) {
                     serverOptions.setTcpFastOpen(true).setTcpCork(true).setTcpQuickAck(true).setReusePort(true);
                 }
-                vertx.createHttpServer(serverOptions).requestHandler(httpsRouter::accept).listen(serverOptions.getHttpsPort(), res -> {
+                vertx.createHttpServer(serverOptions).requestHandler(httpsRouter).listen(serverOptions.getHttpsPort(), res -> {
                     if (res.succeeded()) {
                         System.out.println(appOption.getAppName() + " Running on port " + serverOptions.getHttpsPort() + " by HTTPS");
                         createHttps.handle(Future.succeededFuture());

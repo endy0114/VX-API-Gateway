@@ -8,8 +8,8 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * @author <a href="http://szmirren.com">Mirren</a>
  */
 public class DATAVerticle extends AbstractVerticle {
-    private static final Logger LOG = LogManager.getLogger(DATAVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DATAVerticle.class);
 
     /**
      * JDBC客户端
@@ -32,16 +32,23 @@ public class DATAVerticle extends AbstractVerticle {
     private String thisVertxName;
 
     @Override
+    public void stop() throws Exception {
+        // 释放资源
+        jdbcClient.close();
+        super.stop();
+    }
+
+    @Override
     public void start(Promise<Void> fut) throws Exception {
         LOG.info("start DATA Verticle ...");
         thisVertxName = System.getProperty("thisVertxName", "VX-API");
         initShorthand();// 初始化简写后的常量数据
         JsonObject dbConfig = config();
-        String url = dbConfig.getString("url");
-        if (dbConfig.getString("url").contains("jdbc:sqlite:")) {
+        String url = dbConfig.getString("jdbcUrl");
+        if (dbConfig.getString("jdbcUrl").contains("jdbc:sqlite:")) {
             String temp = url.replace("jdbc:sqlite:", "");
             if (temp.indexOf("/") < 0) {
-                dbConfig.put("url", "jdbc:sqlite:" + PathUtil.getPathString(temp));
+                dbConfig.put("jdbcUrl", "jdbc:sqlite:" + PathUtil.getPathString(temp));
             }
         }
         jdbcClient = JDBCClient.createShared(vertx, dbConfig, VxApiGatewayAttribute.NAME);
