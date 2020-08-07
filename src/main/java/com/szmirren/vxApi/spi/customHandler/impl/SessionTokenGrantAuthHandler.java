@@ -88,10 +88,40 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
      */
     private String thisVertxName;
 
+    /**
+     * 实例化一个session_token的授权处理器
+     *
+     * @param option
+     * @param apis
+     * @param httpClient
+     * @throws NullPointerException
+     * @throws MalformedURLException
+     */
+    public SessionTokenGrantAuthHandler(JsonObject option, VxApi apis, HttpClient httpClient)
+            throws NullPointerException, MalformedURLException {
+        if (option.getValue("saveTokenName") instanceof String) {
+            this.saveTokenName = option.getString("saveTokenName");
+        }
+        if (option.getValue("getTokenName") instanceof String) {
+            this.getTokenName = option.getString("getTokenName");
+        }
+        if (option.getValue("isNext") instanceof Boolean) {
+            this.isNext = option.getBoolean("isNext");
+        }
+        this.thisVertxName = System.getProperty("thisVertxName", "VX-API");
+
+        webClient = WebClient.wrap(httpClient);
+        this.api = apis;
+        this.serOptions = VxApiServerEntranceHttpOptions.fromJson(apis.getServerEntrance().getBody());
+        checkVxApiParamOptions(serOptions);
+        this.policy = new VxApiServerURLPollingPolicy(serOptions.getServerUrls());
+    }
+
     @Override
     public void handle(RoutingContext rct) {
         // 看有没有可用的服务连接
-        if (policy.isHaveService()) {// 有可用连接
+        // 有可用连接
+        if (policy.isHaveService()) {
             // 后台服务连接信息
             VxApiServerURLInfo urlInfo;
             if (serOptions.getBalanceType() == LoadBalanceEnum.IP_HASH) {
@@ -102,7 +132,7 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
             }
             String contentType = rct.request().headers().get(VxApiRouteConstant.CONTENT_TYPE);
             if (contentType != null) {
-                if (contentType.indexOf("urlencoded") > -1) {
+                if (contentType.contains("urlencoded")) {
                     if (api.isBodyAsQuery()) {
                         rct.request().bodyHandler(body -> {
                             bodyUrlParamToBodyParams(body, rct.request().params(), null);
@@ -117,21 +147,26 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
                     if (!rct.response().ended()) {
                         rct.response().putHeader(VxApiRouteConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
                                 .putHeader(VxApiRouteConstant.CONTENT_TYPE, api.getContentType())
-                                .setStatusCode(api.getResult().getApiEnterCheckFailureStatus()).end(api.getResult().getApiEnterCheckFailureExample());
+                                .setStatusCode(api.getResult().getApiEnterCheckFailureStatus())
+                                .end(api.getResult().getApiEnterCheckFailureExample());
                     }
                     return;
                 }
                 // 执行监控
                 VxApiTrackInfo trackInfo = new VxApiTrackInfo(api.getAppName(), api.getApiName());
+                // 获取远程主机IP地址
+                trackInfo.setRemoteIp(rct.request().remoteAddress().host());
                 trackInfo.setRequestBufferLen(rct.getBody() == null ? 0 : rct.getBody().length());
                 String requestPath = urlInfo.getUrl();
-                MultiMap headers = new CaseInsensitiveHeaders();
-                MultiMap queryParams = new CaseInsensitiveHeaders();
-                MultiMap bodyParams = new CaseInsensitiveHeaders();
+                MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+                MultiMap queryParams = MultiMap.caseInsensitiveMultiMap();
+                MultiMap bodyParams = MultiMap.caseInsensitiveMultiMap();
                 if (serOptions.getParams() != null) {
                     loadParam(rct, requestPath, headers, queryParams, bodyParams);
                 }
                 HttpRequest<Buffer> request = webClient.requestAbs(serOptions.getMethod(), requestPath).timeout(serOptions.getTimeOut());
+                // 设置后台访问地址
+                trackInfo.setBackServiceUrl(requestPath);
                 request.headers().addAll(headers);
                 request.queryParams().addAll(queryParams);
                 trackInfo.setRequestTime(Instant.now());
@@ -215,38 +250,9 @@ public class SessionTokenGrantAuthHandler implements VxApiCustomHandler {
     }
 
     /**
-     * 实例化一个session_token的授权处理器
-     *
-     * @param option
-     * @param apis
-     * @param httpClient
-     * @throws NullPointerException
-     * @throws MalformedURLException
-     */
-    public SessionTokenGrantAuthHandler(JsonObject option, VxApi apis, HttpClient httpClient)
-            throws NullPointerException, MalformedURLException {
-        if (option.getValue("saveTokenName") instanceof String) {
-            this.saveTokenName = option.getString("saveTokenName");
-        }
-        if (option.getValue("getTokenName") instanceof String) {
-            this.getTokenName = option.getString("getTokenName");
-        }
-        if (option.getValue("isNext") instanceof Boolean) {
-            this.isNext = option.getBoolean("isNext");
-        }
-        this.thisVertxName = System.getProperty("thisVertxName", "VX-API");
-
-        webClient = WebClient.wrap(httpClient);
-        this.api = apis;
-        this.serOptions = VxApiServerEntranceHttpOptions.fromJson(apis.getServerEntrance().getBody());
-        checkVxApiParamOptions(serOptions);
-        this.policy = new VxApiServerURLPollingPolicy(serOptions.getServerUrls());
-    }
-
-    /**
      * 服务入口的参数检查与路径初始化
      *
-     * @param path
+     * @param ser
      * @param ser
      */
     private void checkVxApiParamOptions(VxApiServerEntranceHttpOptions ser) {

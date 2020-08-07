@@ -246,5 +246,17 @@ public interface VxApiEventBusAddressConstant {
      * 结果:成功受影响行数,失败返回500
      */
     String REPLACE_BLACKLIST = "data:updtBlacklist";
+    /**
+     * API访问信息入库，SysVerticle与MySQLDataVerticle交互，参数要求：JsonObject<br>
+     * 参数类型参考{@link com.szmirren.vxApi.core.entity.VxApiTrackInfo}<br>
+     * 结果无返回值
+     */
+    String SAVE_TRACK_INFO = "data:saveTrackInfo";
+    /**
+     * API请求失败信息记录，SysVerticle与MySQLDataVerticle交互，参数要求：JsonObject<br>
+     * 参数类型参考{@link com.szmirren.vxApi.core.entity.VxApiTrackInfo}<br>
+     * 结果无返回值
+     */
+    String SAVE_REQUEST_ERR = "data:saveRequestErr";
 
 }

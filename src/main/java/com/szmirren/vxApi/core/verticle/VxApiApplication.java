@@ -10,7 +10,7 @@ import com.szmirren.vxApi.core.enums.HttpMethodEnum;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerApiLimit;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerHttpService;
 import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerParamCheck;
-import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerRedirectType;
+import com.szmirren.vxApi.core.handler.route.VxApiRouteHandlerRedirectService;
 import com.szmirren.vxApi.core.options.*;
 import com.szmirren.vxApi.spi.auth.VxApiAuth;
 import com.szmirren.vxApi.spi.auth.VxApiAuthFactory;
@@ -723,14 +723,14 @@ public class VxApiApplication extends AbstractVerticle {
         route.failureHandler(rct -> {
             rct.response().putHeader(SERVER, VxApiGatewayAttribute.FULL_NAME).putHeader(CONTENT_TYPE, api.getContentType())
                     .setStatusCode(api.getResult().getFailureStatus()).end(api.getResult().getFailureExample());
-            VxApiTrackInfo infos = new VxApiTrackInfo(appName, api.getApiName());
+            VxApiTrackInfo info = new VxApiTrackInfo(appName, api.getApiName());
             if (rct.failure() != null) {
-                infos.setErrMsg(rct.failure().getMessage());
-                infos.setErrStackTrace(rct.failure().getStackTrace());
+                info.setErrMsg(rct.failure().getMessage());
+                info.setErrStackTrace(rct.failure().getStackTrace());
             } else {
-                infos.setErrMsg("没有进一步信息 failure 为 null");
+                info.setErrMsg("没有进一步信息 failure 为 null");
             }
-            vertx.eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_ERROR, infos.toJson());
+            vertx.eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_ERROR, info.toJson());
         });
     }
 
@@ -765,7 +765,7 @@ public class VxApiApplication extends AbstractVerticle {
      * @throws NullPointerException
      */
     public void serverRedirectTypeHandler(boolean isNext, VxApi api, Route route) throws NullPointerException {
-        VxApiRouteHandlerRedirectType redirectTypeHandler = VxApiRouteHandlerRedirectType.create(isNext, api);
+        VxApiRouteHandlerRedirectService redirectTypeHandler = VxApiRouteHandlerRedirectService.create(isNext, api);
         route.handler(redirectTypeHandler);
     }
 

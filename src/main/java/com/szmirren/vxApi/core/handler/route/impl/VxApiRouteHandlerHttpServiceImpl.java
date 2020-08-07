@@ -128,6 +128,8 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
         if (policy.isHaveService()) {
             // 执行监控
             VxApiTrackInfo trackInfo = new VxApiTrackInfo(appName, api.getApiName());
+            // 获取远程请求的IP地址
+            trackInfo.setRemoteIp(rct.request().remoteAddress().host());
             trackInfo.setRequestBufferLen(rct.get(VxApiRouteConstant.BODY_KEY_CONTENT_LENGTH));
             // 后台服务连接信息
             VxApiServerURLInfo urlInfo;
@@ -139,6 +141,8 @@ public class VxApiRouteHandlerHttpServiceImpl implements VxApiRouteHandlerHttpSe
             }
             // 获得请求服务连接
             String reqURL = urlInfo.getUrl();
+            //设置后台服务访问地址
+            trackInfo.setBackServiceUrl(reqURL);
             // 获取请求的Path参数并加载Path参数
             MultiMap reqPathParam = rct.get(VxApiRouteConstant.BODY_KEY_PATH_TYPE_MultiMap);
             if (reqPathParam.entries() != null) {

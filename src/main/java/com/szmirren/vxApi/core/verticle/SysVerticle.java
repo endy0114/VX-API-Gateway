@@ -12,7 +12,6 @@ import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Deque;
@@ -88,7 +87,7 @@ public class SysVerticle extends AbstractVerticle {
         thisVertxName = System.getProperty("thisVertxName", "VX-API");
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_GET_INFO, this::getSysInfo);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_ERROR, this::plusError);
-        vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_TRACK_INFO, this::plusTrackInfos);
+        vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_PLUS_TRACK_INFO, this::plusTrackInfo);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_GET_TRACK_INFO, this::getTrackInfo);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_BLACK_IP_FIND, this::findIpList);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SYSTEM_BLACK_IP_REPLACE, this::replaceIpList);
@@ -172,7 +171,7 @@ public class SysVerticle extends AbstractVerticle {
             result.put("requestHttpApiCount", requestHttpApiCount);
             result.put("currentHttpApiProcessingCount", currentHttpApiProcessingCount);
             //黑名单信息
-            result.put("content",res.getJsonArray("content"));
+            result.put("content", res.getJsonArray("content"));
             // 返回消息
             msg.reply(result);
         }).onFailure(err -> {
@@ -190,9 +189,11 @@ public class SysVerticle extends AbstractVerticle {
     public void plusError(Message<JsonObject> msg) {
         errorCount += 1;
         if (msg.body() != null) {
-            VxApiTrackInfo infos = VxApiTrackInfo.fromJson(msg.body());
-            LOG.error(MessageFormat.format("应用:{0} , API:{1} ,在执行的过程中发生了异常:{2} ,堆栈信息{3}", infos.getAppName(), infos.getApiName(),
-                    infos.getErrMsg(), infos.getErrStackTrace()));
+            VxApiTrackInfo info = VxApiTrackInfo.fromJson(msg.body());
+            LOG.error("应用:{} , API:{} ,在执行的过程中发生了异常:{} ,堆栈信息{}", info.getAppName(), info.getApiName(),
+                    info.getErrMsg(), info.getErrStackTrace());
+            // 信息入库
+            vertx.eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SAVE_REQUEST_ERR, msg.body());
         }
     }
 
@@ -201,31 +202,28 @@ public class SysVerticle extends AbstractVerticle {
      *
      * @param msg
      */
-    public void plusTrackInfos(Message<JsonObject> msg) {
+    public void plusTrackInfo(Message<JsonObject> msg) {
         if (msg.body() != null) {
-            VxApiTrackInfo infos = VxApiTrackInfo.fromJson(msg.body());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(MessageFormat.format("应用:{0} , API:{1} ,执行结果{2}", infos.getAppName(), infos.getApiName(), infos));
-            }
+            VxApiTrackInfo info = VxApiTrackInfo.fromJson(msg.body());
+            LOG.debug("应用:{} , API:{} ,执行结果{}", info.getAppName(), info.getApiName(), info);
             // map的key
-            String key = infos.getAppName() + "-" + infos.getApiName();
+            String key = info.getAppName() + "-" + info.getApiName();
             // 记录API相关信息
-            if (!infos.isSuccessful()) {
+            if (!info.isSuccessful()) {
                 // 记录异常
                 errorCount += 1;
                 requestFailedCount.putIfAbsent(key, 0L);
                 requestFailedCount.put(key, requestFailedCount.get(key) + 1);
-                LOG.error(MessageFormat.format("应用:{0} , API:{1} ,在执行的过程中发生了异常:{2} ,堆栈信息{3}", infos.getAppName(), infos.getApiName(),
-                        infos.getErrMsg(), infos.getErrStackTrace()));
+                LOG.error("应用:{} , API:{} ,在执行的过程中发生了异常:{} ,堆栈信息{}", info.getAppName(), info.getApiName(), info.getErrMsg(), info.getErrStackTrace());
             } else {
                 JsonObject json = new JsonObject();
-                Duration proc = Duration.between(infos.getStartTime(), infos.getEndTime());
-                json.put("time", infos.getStartTime());
+                Duration proc = Duration.between(info.getStartTime(), info.getEndTime());
+                json.put("time", info.getStartTime());
                 json.put("overallTime", proc.toMillis());
-                Duration reqs = Duration.between(infos.getRequestTime(), infos.getResponseTime());
+                Duration reqs = Duration.between(info.getRequestTime(), info.getResponseTime());
                 json.put("requestTime", reqs.toMillis());
-                json.put("requestBodyLen", infos.getRequestBufferLen());
-                json.put("responseBodyLen", infos.getResponseBufferLen());
+                json.put("requestBodyLen", info.getRequestBufferLen());
+                json.put("responseBodyLen", info.getResponseBufferLen());
                 if (trackSucceededMap.get(key) == null) {
                     trackSucceededMap.put(key, new LinkedList<>());
                 } else {
@@ -238,6 +236,8 @@ public class SysVerticle extends AbstractVerticle {
             // 添加请求数量统计
             requestCount.putIfAbsent(key, 0L);
             requestCount.put(key, requestCount.get(key) + 1);
+            // 信息入库
+            vertx.eventBus().send(thisVertxName + VxApiEventBusAddressConstant.SAVE_TRACK_INFO, msg.body());
         }
     }
 

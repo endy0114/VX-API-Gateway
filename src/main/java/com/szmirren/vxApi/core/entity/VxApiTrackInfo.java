@@ -54,6 +54,14 @@ public class VxApiTrackInfo {
      * 异常信息
      */
     private String errStackTrace;
+    /**
+     * 远程请求IP地址
+     */
+    private String remoteIp;
+    /**
+     * 后台服务地址
+     */
+    private String backServiceUrl;
 
     /**
      * 将当前对象装换为JSON
@@ -71,6 +79,8 @@ public class VxApiTrackInfo {
         json.put("requestBufferLen", this.requestBufferLen);
         json.put("responseBufferLen", this.responseBufferLen);
         json.put("successful", this.successful);
+        json.put("remoteIp", this.remoteIp);
+        json.put("backServiceUrl", this.backServiceUrl);
         if (errMsg != null) {
             json.put("errMsg", this.errMsg);
         }
@@ -124,6 +134,12 @@ public class VxApiTrackInfo {
         }
         if (json.getValue("errStackTrace") instanceof String) {
             option.setErrStackTrace(json.getString("errStackTrace"));
+        }
+        if (json.getValue("remoteIp") instanceof String) {
+            option.setRemoteIp(json.getString("remoteIp"));
+        }
+        if (json.getValue("backServiceUrl") instanceof String) {
+            option.setBackServiceUrl(json.getString("backServiceUrl"));
         }
 
         return option;
@@ -344,6 +360,42 @@ public class VxApiTrackInfo {
     }
 
     /**
+     * 获取远程请求IP地址
+     *
+     * @return
+     */
+    public String getRemoteIp() {
+        return remoteIp;
+    }
+
+    /**
+     * 设置远程请求IP地址
+     *
+     * @param remoteIp
+     */
+    public void setRemoteIp(String remoteIp) {
+        this.remoteIp = remoteIp;
+    }
+
+    /**
+     * 获取后台服务请求地址
+     *
+     * @return
+     */
+    public String getBackServiceUrl() {
+        return backServiceUrl;
+    }
+
+    /**
+     * 设置后台服务请求地址
+     *
+     * @param backServiceUrl
+     */
+    public void setBackServiceUrl(String backServiceUrl) {
+        this.backServiceUrl = backServiceUrl;
+    }
+
+    /**
      * 设置异常的堆栈信息
      *
      * @param stackTrace 报错的堆栈信息
@@ -361,10 +413,20 @@ public class VxApiTrackInfo {
 
     @Override
     public String toString() {
-        return "VxApiTrackInfos [startTime=" + startTime + ", endTime=" + endTime
-                + ", requestTime=" + requestTime + ", responseTime=" + responseTime + ", requestBufferLen=" + requestBufferLen
-                + ", responseBufferLen=" + responseBufferLen + ", successful=" + successful + ", errMsg=" + errMsg + ", errStackTrace="
-                + errStackTrace + "]";
+        return "VxApiTrackInfo{" +
+                "appName='" + appName + '\'' +
+                ", apiName='" + apiName + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", requestTime=" + requestTime +
+                ", responseTime=" + responseTime +
+                ", requestBufferLen=" + requestBufferLen +
+                ", responseBufferLen=" + responseBufferLen +
+                ", successful=" + successful +
+                ", errMsg='" + errMsg + '\'' +
+                ", errStackTrace='" + errStackTrace + '\'' +
+                ", remoteIp='" + remoteIp + '\'' +
+                ", backServiceUrl='" + backServiceUrl + '\'' +
+                '}';
     }
-
 }

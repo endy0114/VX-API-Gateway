@@ -3,6 +3,7 @@ package com.szmirren.vxApi.core.verticle;
 import com.szmirren.vxApi.core.common.StrUtil;
 import com.szmirren.vxApi.core.common.VxApiDATASQLConstant;
 import com.szmirren.vxApi.core.common.VxApiEventBusAddressConstant;
+import com.szmirren.vxApi.core.entity.VxApiTrackInfo;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
@@ -60,6 +61,9 @@ public class MySQLDataVerticle extends AbstractVerticle {
         // blacklist
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.FIND_BLACKLIST, this::findBlacklist);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.REPLACE_BLACKLIST, this::replaceBlacklist);
+        // track info
+        vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SAVE_REQUEST_ERR, this::saveRequestErr);
+        vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SAVE_TRACK_INFO, this::saveTrackInfo);
         LOG.info("start DATA Verticle successful");
         startPromise.complete();
 
@@ -78,16 +82,64 @@ public class MySQLDataVerticle extends AbstractVerticle {
         MySQLConnectOptions connectOptions = new MySQLConnectOptions()
                 .setPort(dbConfig.getInteger("port", 3306))
                 .setHost(dbConfig.getString("host", "localhost"))
-                .setDatabase(dbConfig.getString("dataBase","vx_gateway"))
-                .setUser(dbConfig.getString("user","admin"))
-                .setPassword(dbConfig.getString("password","admin"))
-                .setCachePreparedStatements(dbConfig.getBoolean("cachePreparedStatements",true))
-                .setIdleTimeout(dbConfig.getInteger("idleTimeout",30000))
-                .setConnectTimeout(dbConfig.getInteger("connectTimeout",60000))
-                .setCharacterEncoding(dbConfig.getString("characterEncoding","utf-8"));
+                .setDatabase(dbConfig.getString("dataBase", "vx_gateway"))
+                .setUser(dbConfig.getString("user", "admin"))
+                .setPassword(dbConfig.getString("password", "admin"))
+                .setCachePreparedStatements(dbConfig.getBoolean("cachePreparedStatements", true))
+                .setIdleTimeout(dbConfig.getInteger("idleTimeout", 30000))
+                .setConnectTimeout(dbConfig.getInteger("connectTimeout", 60000))
+                .setCharacterEncoding(dbConfig.getString("characterEncoding", "utf-8"));
         // 设置线程池大小
-        PoolOptions poolOptions = new PoolOptions().setMaxSize(dbConfig.getInteger("maxSize",10));
+        PoolOptions poolOptions = new PoolOptions().setMaxSize(dbConfig.getInteger("maxSize", 10));
         pool = MySQLPool.pool(vertx, connectOptions, poolOptions);
+    }
+
+    /**
+     * 存储请求一场信息
+     *
+     * @param msg
+     */
+    private void saveRequestErr(Message<JsonObject> msg) {
+        if (msg.body() == null) {
+            LOG.warn("请求异常信息为空");
+        } else {
+            LOG.debug("异常信息数据：{}", msg.body());
+            JsonObject body = msg.body();
+            Tuple params = Tuple.of(body.getString("appName"), body.getString("apiName"),
+                    body.getString("errMsg"), body.getString("errStackTrace"));
+            pool.preparedQuery(VxApiDATASQLConstant.SAVE_REQUEST_ERR).execute(params, res -> {
+                if (res.failed()) {
+                    LOG.error("API请求异常信息存储失败！{}", res.cause().getMessage(), res.cause());
+                }
+            });
+        }
+    }
+
+    /**
+     * 存储API请求信息
+     *
+     * @param msg
+     */
+    private void saveTrackInfo(Message<JsonObject> msg) {
+        if (msg.body() == null) {
+            LOG.warn("请求异常信息为空");
+        } else {
+            LOG.debug("API请求信息数据：{}", msg.body());
+            VxApiTrackInfo trackInfo = VxApiTrackInfo.fromJson(msg.body());
+            Tuple params = Tuple.of(trackInfo.getAppName(), trackInfo.getApiName(),
+                    trackInfo.getStartTime().toEpochMilli(),
+                    trackInfo.getEndTime().toEpochMilli(),
+                    trackInfo.getRequestTime().toEpochMilli(),
+                    trackInfo.getResponseTime().toEpochMilli(),
+                    trackInfo.getRequestBufferLen(), trackInfo.getResponseBufferLen(),
+                    trackInfo.isSuccessful(),
+                    trackInfo.getErrMsg(), trackInfo.getErrStackTrace(), trackInfo.getRemoteIp(), trackInfo.getBackServiceUrl());
+            pool.preparedQuery(VxApiDATASQLConstant.SAVE_TRACK_INFO).execute(params, res -> {
+                if (res.failed()) {
+                    LOG.error("API请求信息存储失败！{}", res.cause().getMessage(), res.cause());
+                }
+            });
+        }
     }
 
     /**

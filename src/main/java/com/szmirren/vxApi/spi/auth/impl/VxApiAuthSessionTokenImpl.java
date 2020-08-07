@@ -36,29 +36,29 @@ public class VxApiAuthSessionTokenImpl implements VxApiAuth {
 	private String authFailResult;// 认证失败返回结果
 
 	@Override
-	public void handle(RoutingContext event) {
-		Session session = event.session();
+	public void handle(RoutingContext rct) {
+		Session session = rct.session();
 		if (session == null) {
-			if (!event.response().ended()) {
-				event.response().putHeader(HttpHeaderConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
+			if (!rct.response().ended()) {
+				rct.response().putHeader(HttpHeaderConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
 						.putHeader(HttpHeaderConstant.CONTENT_TYPE, authFailContentType.val()).end(authFailResult);
 			}
 		} else {
 			// session中的token
 			String apiToken = session.get(apiTokenName) == null ? null : session.get(apiTokenName).toString();
 			// 用户request中的token
-			String userTokoen = null;
+			String userToken = null;
 			if (userTokenScope == ParamPositionEnum.HEADER) {
-				userTokoen = event.request().getHeader(userTokenName);
+				userToken = rct.request().getHeader(userTokenName);
 			} else {
-				userTokoen = event.request().getParam(userTokenName);
+				userToken = rct.request().getParam(userTokenName);
 			}
 			// 检验请求是否正确如果正确放行反则不通过
-			if (!StrUtil.isNullOrEmpty(apiToken) && apiToken.equals(userTokoen)) {
-				event.next();
+			if (!StrUtil.isNullOrEmpty(apiToken) && apiToken.equals(userToken)) {
+				rct.next();
 			} else {
-				if (!event.response().ended()) {
-					event.response().putHeader(HttpHeaderConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
+				if (!rct.response().ended()) {
+					rct.response().putHeader(HttpHeaderConstant.SERVER, VxApiGatewayAttribute.FULL_NAME)
 							.putHeader(HttpHeaderConstant.CONTENT_TYPE, authFailContentType.val()).end(authFailResult);
 				}
 			}

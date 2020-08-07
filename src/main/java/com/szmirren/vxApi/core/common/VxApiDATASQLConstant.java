@@ -66,5 +66,14 @@ public interface VxApiDATASQLConstant {
      * 更新和名单
      */
     String UPDATE_BLACKLIST = "REPLACE INTO vx_api_blacklist (content,name) values (?,?)";
+    /**
+     * 查询API请求异常信息
+     */
+    String SAVE_REQUEST_ERR = "insert into vx_api_request_err(appName,apiName,errMsg,errStackTrace)values(?,?,?,?)";
+    /**
+     * 存储API请求详细信息
+     */
+    String SAVE_TRACK_INFO = "insert into vx_api_track (appName,apiName,startTime,endTime,requestTime,responseTime,requestBufferLen,responseBufferLen,successful,errMsg,errStackTrace,remoteIp,backServiceUrl) " +
+            "values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 }

@@ -19,7 +19,7 @@
     }
   },
   "dataConfig": {
-    "type": "sqlite",
+    "type": "mysql",
     "mysql": {
       "desc": "建议生产使用",
       "host": "localhost",
