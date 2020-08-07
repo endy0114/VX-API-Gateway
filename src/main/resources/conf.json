@@ -36,7 +36,7 @@
     "sqlite": {
       "desc": "测试或者演示使用，换成其他的数据库也应该能使用，但是可能会有部分SQL不兼容的情况",
       "provider_class": "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider",
-      "jdbcUrl": "jdbc:sqlite:configDB.db",
+      "jdbcUrl": "jdbc:sqlite:data/configDB.db",
       "driverClassName": "org.sqlite.JDBC"
     }
   },

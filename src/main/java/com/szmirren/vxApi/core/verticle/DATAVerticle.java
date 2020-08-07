@@ -44,13 +44,9 @@ public class DATAVerticle extends AbstractVerticle {
         thisVertxName = System.getProperty("thisVertxName", "VX-API");
         initShorthand();// 初始化简写后的常量数据
         JsonObject dbConfig = config();
-        String url = dbConfig.getString("jdbcUrl");
-        if (dbConfig.getString("jdbcUrl").contains("jdbc:sqlite:")) {
-            String temp = url.replace("jdbc:sqlite:", "");
-            if (temp.indexOf("/") < 0) {
-                dbConfig.put("jdbcUrl", "jdbc:sqlite:" + PathUtil.getPathString(temp));
-            }
-        }
+        String dbPath = dbConfig.getString("jdbcUrl").substring("jdbc:sqlite:".length());
+        dbConfig.put("jdbcUrl", "jdbc:sqlite:" + PathUtil.getPathString(dbPath));
+
         jdbcClient = JDBCClient.createShared(vertx, dbConfig, VxApiGatewayAttribute.NAME);
 
         // application operation address
