@@ -76,8 +76,37 @@ public class DeploymentVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.DEPLOY_APP_IS_ONLINE, this::getAppIsOnline);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.DEPLOY_FIND_ONLINE_API, this::findOnlineAPI);
         vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.DEPLOY_API_IS_ONLINE, this::getApiIsOnline);
+        // track info
+        vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SAVE_REQUEST_ERR, this::saveRequestErr);
+        vertx.eventBus().consumer(thisVertxName + VxApiEventBusAddressConstant.SAVE_TRACK_INFO, this::saveTrackInfo);
         LOG.info("start Deployment Verticle successful");
         super.start(startFuture);
+    }
+
+    /**
+     * 存储请求一场信息
+     *
+     * @param msg
+     */
+    private void saveRequestErr(Message<JsonObject> msg) {
+        if (msg.body() == null) {
+            LOG.warn("请求异常信息为空");
+        } else {
+            LOG.debug("异常信息数据：{}", msg.body());
+        }
+    }
+
+    /**
+     * 存储API请求信息
+     *
+     * @param msg
+     */
+    private void saveTrackInfo(Message<JsonObject> msg) {
+        if (msg.body() == null) {
+            LOG.warn("请求异常信息为空");
+        } else {
+            LOG.debug("API请求信息数据：{}", msg.body());
+        }
     }
 
     /**
